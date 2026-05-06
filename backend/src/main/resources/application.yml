@@ -1,0 +1,52 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: smart-repair
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/smart_repair?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2s
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+app:
+  auth:
+    allow-mock-token: ${ALLOW_MOCK_TOKEN:true}
+  timeout:
+    enabled: ${APP_TIMEOUT_ENABLED:true}
+  upload:
+    dir: ./uploads
+  dispatch:
+    enabled: ${APP_DISPATCH_ENABLED:true}
+    candidate-limit: 20
+    invite-top-n: 3
+    location-expire-seconds: 600
+    max-active-orders: 5
+    cooldown-seconds: 300
+    w-distance: 0.55
+    w-load: 0.35
+    w-performance: 0.10
+  sla:
+    assign-timeout-seconds: 60
+    accept-timeout-seconds: 300
+    first-update-timeout-seconds: 900
+    finish-timeout-seconds: 7200
+  amap:
+    key: ${AMAP_KEY:}
+    geocode-url: https://restapi.amap.com/v3/geocode/regeo
+  cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:*}
+
