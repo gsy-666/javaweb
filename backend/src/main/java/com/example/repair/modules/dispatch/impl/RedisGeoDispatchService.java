@@ -262,6 +262,16 @@ public class RedisGeoDispatchService implements DispatchService {
     return "worker:online:" + workerId;
   }
 
+  @Override
+  public void cooldownWorker(Long workerId) {
+    if (workerId == null) return;
+    redis.opsForValue().set(cooldownKey(workerId), "1", Duration.ofSeconds(props.getCooldownSeconds()));
+  }
+
+  private String onlineKey(Long workerId) {
+    return "worker:online:" + workerId;
+  }
+
   @Value
   private static class Candidate {
     Long workerId;
