@@ -1,0 +1,64 @@
+services:
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: smart_repair
+      MYSQL_USER: smart
+      MYSQL_PASSWORD: smartpass
+      MYSQL_ROOT_PASSWORD: rootpass
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      SERVER_PORT: 8082
+      DB_URL: jdbc:mysql://mysql:3306/smart_repair?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      DB_USERNAME: smart
+      DB_PASSWORD: smartpass
+      AMAP_KEY: ${AMAP_KEY:-}
+      CORS_ALLOWED_ORIGIN_PATTERNS: http://*;https://*
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - backend_uploads:/app/uploads
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - appnet
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  redis_data:
+  backend_uploads:
+
+networks:
+  appnet:
+    driver: bridge

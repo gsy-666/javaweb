@@ -33,7 +33,7 @@ const canDelete = computed(() => {
 async function deleteMine() {
   if (!window.confirm('确认删除该工单？删除后在列表中将不可见。')) return
   try {
-    await api.post(`/api/work-orders/${id.value}/delete`)
+    await api.post(`/work-orders/${id.value}/delete`)
     await router.replace('/orders')
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -43,9 +43,9 @@ async function deleteMine() {
 async function load() {
   err.value = null
   try {
-    const resp = await api.get(`/api/work-orders/${id.value}`)
+    const resp = await api.get(`/work-orders/${id.value}`)
     detail.value = resp.data?.data
-    const chatResp = await api.get(`/api/work-orders/${id.value}/chat/messages`)
+    const chatResp = await api.get(`/work-orders/${id.value}/chat/messages`)
     chat.value = chatResp.data?.data || []
 
     const etaAt = detail.value?.workOrder?.etaAt
