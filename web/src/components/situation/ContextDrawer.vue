@@ -33,7 +33,7 @@ async function load() {
   loading.value = true
   err.value = null
   try {
-    const resp = await api.get(`/api/work-orders/${props.workOrderId}`)
+    const resp = await api.get(`/work-orders/${props.workOrderId}`)
     detail.value = resp.data?.data
   } catch (e: any) {
     err.value = e?.message || '加载失败'
@@ -66,12 +66,12 @@ async function act(name: string) {
   if (!woId) return
   err.value = null
   try {
-    if (name === '接单') await api.post(`/api/work-orders/${woId}/accept`)
-    else if (name === '拒单') await api.post(`/api/work-orders/${woId}/reject`, null, { params: { reason: '忙碌/不方便' } })
-    else if (name === '更新进度') await api.post(`/api/work-orders/${woId}/progress`, { message: '已到达现场，开始处理' })
-    else if (name === '完工') await api.post(`/api/work-orders/${woId}/finish`, null, { params: { message: '已修复完成' } })
-    else if (name === '评价') await api.post(`/api/work-orders/${woId}/rating`, { stars: 5, tags: ['服务态度好'], comment: '很好' })
-    else if (name === '取消') await api.post(`/api/work-orders/${woId}/cancel`)
+    if (name === '接单') await api.post(`/work-orders/${woId}/accept`)
+    else if (name === '拒单') await api.post(`/work-orders/${woId}/reject`, null, { params: { reason: '忙碌/不方便' } })
+    else if (name === '更新进度') await api.post(`/work-orders/${woId}/progress`, { message: '已到达现场，开始处理' })
+    else if (name === '完工') await api.post(`/work-orders/${woId}/finish`, null, { params: { message: '已修复完成' } })
+    else if (name === '评价') await api.post(`/work-orders/${woId}/rating`, { stars: 5, tags: ['服务态度好'], comment: '很好' })
+    else if (name === '取消') await api.post(`/work-orders/${woId}/cancel`)
     else return
 
     await load()
@@ -108,7 +108,11 @@ function fmtTime(s?: string) {
           <div style="font-weight: 900">#{{ workOrder.id }}</div>
           <span class="chip">{{ getStatusLabel(String(workOrder.status)) }}</span>
         </div>
-        <div class="muted" style="margin-top: 8px">{{ workOrder.address || '-' }}</div>
+        <div class="row muted" style="margin-top: 8px">
+          <span style="flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">
+            {{ workOrder.address || '-' }}
+          </span>
+        </div>
         <div style="margin-top: 10px">{{ workOrder.description || '-' }}</div>
       </div>
 

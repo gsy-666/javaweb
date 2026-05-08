@@ -104,7 +104,7 @@ async function sendChat() {
 async function setEta() {
   if (!etaInput.value) return
   try {
-    await api.post(`/api/work-orders/${id.value}/eta`, { etaAt: etaInput.value + ':00' })
+    await api.post(`/work-orders/${id.value}/eta`, { etaAt: etaInput.value + ':00' })
     await load()
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -113,7 +113,7 @@ async function setEta() {
 
 async function confirmFixed() {
   try {
-    await api.post(`/api/work-orders/${id.value}/confirm-fixed`)
+    await api.post(`/work-orders/${id.value}/confirm-fixed`)
     await load()
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -122,7 +122,7 @@ async function confirmFixed() {
 
 async function accept() {
   try {
-    await api.post(`/api/work-orders/${id.value}/accept`)
+    await api.post(`/work-orders/${id.value}/accept`)
     await load()
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -130,7 +130,7 @@ async function accept() {
 }
 async function reject() {
   try {
-    await api.post(`/api/work-orders/${id.value}/reject`, null, { params: { reason: '忙碌/不方便' } })
+    await api.post(`/work-orders/${id.value}/reject`, null, { params: { reason: '忙碌/不方便' } })
     await load()
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -138,7 +138,7 @@ async function reject() {
 }
 async function progress() {
   try {
-    await api.post(`/api/work-orders/${id.value}/progress`, { message: '已到达现场，开始处理' })
+    await api.post(`/work-orders/${id.value}/progress`, { message: '已到达现场，开始处理' })
     await load()
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -146,7 +146,7 @@ async function progress() {
 }
 async function finish() {
   try {
-    await api.post(`/api/work-orders/${id.value}/finish`, null, { params: { message: '已修复完成' } })
+    await api.post(`/work-orders/${id.value}/finish`, null, { params: { message: '已修复完成' } })
     await load()
   } catch (e: any) {
     err.value = e?.message || '操作失败'
@@ -154,7 +154,7 @@ async function finish() {
 }
 async function rate() {
   try {
-    await api.post(`/api/work-orders/${id.value}/rating`, {
+    await api.post(`/work-orders/${id.value}/rating`, {
       stars: rateStars.value,
       tags: [],
       comment: rateComment.value || '',
@@ -254,7 +254,13 @@ onBeforeUnmount(() => {
             <button @click="finish">完工</button>
 
             <div class="eta" v-if="detail?.workOrder?.status !== 'CLOSED'">
-              <input v-model="etaInput" type="datetime-local" class="chat-input" placeholder="预计上门时间" />
+              <input
+                v-model="etaInput"
+                type="datetime-local"
+                class="chat-input"
+                :min="new Date().toISOString().slice(0, 16)"
+                placeholder="预计上门时间"
+              />
               <button class="primary" :disabled="!etaInput" @click="setEta">保存ETA</button>
             </div>
           </template>

@@ -17,6 +17,16 @@ export const api = axios.create({
 
 export function getAssetUrl(path: string): string {
   if (!path) return apiBaseUrl
+
+  // Backend exposes uploaded files at /uploads/** (not /api/uploads/**)
+  if (path.startsWith('/uploads/')) {
+    // In dev, Vite can proxy /uploads -> backend. If not, fall back to backend port.
+    if (apiBaseUrl.startsWith('/')) {
+      return window.location.port === '5173' ? `http://localhost:8082${path}` : path
+    }
+    return `${new URL(apiBaseUrl).origin}${path}`
+  }
+
   return path.startsWith('http://') || path.startsWith('https://')
     ? path
     : `${apiBaseUrl}${path.startsWith('/') ? '' : '/'}${path}`

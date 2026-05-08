@@ -148,26 +148,28 @@ onMounted(() => {
             <thead>
               <tr>
                 <th style="width: 80px">ID</th>
-                <th style="width: 120px">工种</th>
-                <th style="width: 140px">状态</th>
-                <th style="width: 120px">指派</th>
+                <th style="width: 100px">工种</th>
+                <th style="width: 180px">状态</th>
+                <th style="width: 100px">指派</th>
                 <th>地址</th>
-                <th style="width: 120px">操作</th>
+                <th style="width: 100px">操作</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="o in list" :key="o.id" class="row" @click="router.push(`/admin/orders/${o.id}`)">
-                <td @click.stop><RouterLink class="link" :to="`/admin/orders/${o.id}`">#{{ o.id }}</RouterLink></td>
+              <tr v-for="o in list" :key="o.id" class="table-row" @click="router.push(`/admin/orders/${o.id}`)">
+                <td class="id" @click.stop><RouterLink class="link" :to="`/admin/orders/${o.id}`">#{{ o.id }}</RouterLink></td>
                 <td><span class="chip">{{ tradeLabel(o.tradeCode) }}</span></td>
                 <td>
-                  <span class="chip" :data-s="String(o.status)">{{ o.status }}</span>
-                  <span v-if="(o.escalationLevel || 0) > 0" class="chip warn">预警{{ o.escalationLevel }}</span>
+                  <div class="status">
+                    <span class="chip" :data-s="String(o.status)">{{ o.status }}</span>
+                    <span v-if="(o.escalationLevel || 0) > 0" class="chip warn">预警{{ o.escalationLevel }}</span>
+                  </div>
                 </td>
                 <td>
                   <span class="muted tiny">{{ o.assignedWorkerId ? `#${o.assignedWorkerId}` : '-' }}</span>
                 </td>
                 <td class="addr">{{ o.address || '-' }}</td>
-                <td @click.stop>
+                <td class="op" @click.stop>
                   <button class="ghost" @click="openAssign(o.id)">分配</button>
                 </td>
               </tr>
@@ -280,11 +282,61 @@ onMounted(() => {
   overflow-x: auto;
 }
 
-.row {
-  cursor: pointer;
+table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
 }
 
-.row:hover {
+table tr {
+  display: table-row;
+}
+
+table th,
+
+table td {
+  display: table-cell;
+}
+
+td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-all;
+}
+
+.id {
+  width: 80px;
+}
+
+.op {
+  width: 120px;
+}
+
+.addr {
+  white-space: normal;
+  word-break: break-all;
+  line-height: 1.5;
+  color: var(--sr-text2);
+}
+
+.table-row td {
+  vertical-align: middle;
+}
+
+.id {
+  white-space: nowrap;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.table-row:hover {
+  cursor: pointer;
   background: color-mix(in srgb, var(--sr-brand) 6%, transparent);
 }
 
@@ -296,10 +348,6 @@ onMounted(() => {
 
 .link:hover {
   text-decoration: underline;
-}
-
-.addr {
-  min-width: 260px;
 }
 
 .chip.warn {

@@ -85,6 +85,8 @@ public class UserContextFilter extends OncePerRequestFilter {
     return uri.startsWith("/api/auth/login")
         || uri.startsWith("/api/auth/register")
         || uri.startsWith("/api/auth/logout")
+        || uri.startsWith("/api/files/upload")
+        || uri.startsWith("/uploads/")
         || uri.startsWith("/ws");
   }
 

@@ -26,9 +26,15 @@ public class WebConfig implements WebMvcConfigurer {
         .allowCredentials(true);
   }
 
+  @Value("${app.upload.dir:./uploads}")
+  private String uploadDir;
+
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/uploads/**").addResourceLocations("file:./uploads/");
+    String dir = uploadDir;
+    if (dir == null || dir.isBlank()) dir = "./uploads";
+    if (!dir.endsWith("/")) dir = dir + "/";
+    registry.addResourceHandler("/uploads/**").addResourceLocations("file:" + dir);
   }
 }
 

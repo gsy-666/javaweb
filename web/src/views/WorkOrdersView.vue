@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { api } from '../api'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
 
 import PageContainer from '../components/PageContainer.vue'
 import UiCard from '../components/UiCard.vue'
@@ -16,6 +16,7 @@ type WorkOrder = {
   escalationLevel?: number
 }
 
+const router = useRouter()
 const list = ref<WorkOrder[]>([])
 const err = ref<string | null>(null)
 
@@ -87,24 +88,26 @@ onMounted(load)
 
       <UiCard title="工单列表" class="span2">
         <div class="table-wrap">
-          <table>
+          <table class="wo-table">
             <thead>
               <tr>
-                <th style="width: 80px">ID</th>
-                <th style="width: 120px">工种</th>
-                <th style="width: 140px">状态</th>
-                <th>地址</th>
+                <th class="col-id" style="width: 80px">ID</th>
+                <th class="col-trade" style="width: 120px">工种</th>
+                <th class="col-status" style="width: 140px">状态</th>
+                <th class="col-addr">地址</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="o in list" :key="o.id">
-                <td><RouterLink class="link" :to="`/orders/${o.id}`">#{{ o.id }}</RouterLink></td>
-                <td><span class="chip">{{ tradeLabel(o.tradeCode) }}</span></td>
-                <td>
+              <tr v-for="o in list" :key="o.id" class="row" @click="() => router.push(`/orders/${o.id}`)">
+                <td class="cell id"><RouterLink class="link" :to="`/orders/${o.id}`">#{{ o.id }}</RouterLink></td>
+                <td class="cell trade"><span class="chip">{{ tradeLabel(o.tradeCode) }}</span></td>
+                <td class="cell status">
                   <span class="chip" :data-s="String(o.status)">{{ o.status }}</span>
                   <span v-if="(o.escalationLevel || 0) > 0" class="chip warn">预警{{ o.escalationLevel }}</span>
                 </td>
-                <td class="addr">{{ o.address || '-' }}</td>
+                <td class="cell addr">
+                  <span class="addr-text">{{ o.address || '-' }}</span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -193,6 +196,63 @@ onMounted(load)
   overflow-x: auto;
 }
 
+.wo-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.wo-table th,
+.wo-table td {
+  display: table-cell;
+  padding: 14px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--sr-border) 60%, transparent);
+  vertical-align: middle;
+}
+
+.wo-table tr {
+  display: table-row;
+}
+
+.cell.id,
+.col-id {
+  width: 80px;
+}
+
+.cell.trade,
+.col-trade {
+  width: 120px;
+}
+
+.cell.status,
+.col-status {
+  width: 140px;
+}
+
+.cell.addr,
+.col-addr {
+  width: auto;
+}
+
+.cell.addr {
+  white-space: nowrap;
+}
+
+.addr-text {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row {
+  cursor: pointer;
+}
+
+.row:hover {
+  background: color-mix(in srgb, var(--sr-brand) 6%, transparent);
+}
+
 .link {
   color: inherit;
   text-decoration: none;
@@ -201,10 +261,6 @@ onMounted(load)
 
 .link:hover {
   text-decoration: underline;
-}
-
-.addr {
-  min-width: 260px;
 }
 
 .chip.warn {
